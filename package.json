@@ -1,0 +1,23 @@
+{
+  "name": "veneno",
+  "version": "0.0.1",
+  "description": "a web sec lib",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhuyingda/veneno.git"
+  },
+  "keywords": [
+    "xss",
+    "csrf"
+  ],
+  "author": "zhuyingda",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhuyingda/veneno/issues"
+  },
+  "homepage": "https://github.com/zhuyingda/veneno#readme"
+}
