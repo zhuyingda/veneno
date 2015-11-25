@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/zhuyingda/veneno/issues"
   },
-  "homepage": "https://github.com/zhuyingda/veneno#readme"
+  "homepage": "https://github.com/zhuyingda/veneno#readme",
+  "dependencies": {
+    "through2": "^0.6.5",
+    "request": "^2.67.0"
+  }
 }
