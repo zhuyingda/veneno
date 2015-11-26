@@ -4,6 +4,8 @@ var through = require('through2');
 var request = require('request');
 var hostPrefix = '';
 var urlStack = [];
+var jsCount=0;
+var jsStack = [];
 
 function httpGet(url, ii) {
     //console.log('发起请求:', url);
@@ -56,10 +58,21 @@ function detectPath(str) {
 }
 
 function detectJs(str) {
-    let reg = /src\=[\"|\'].*\.js[\"|\']/g;
+    let reg = /<script\b("[^"]*"|'[^']*'|[^'">])*>/g;
     str.replace(reg, function (i) {
-        //console.log('发现js:', i.slice(5, i.length - 1));
-        //console.log('发现js链接' + urlStack.length + '个');
+        let reg2 = /src=["'].*?["']/g;
+        i.replace(reg2, function (ii) {
+            var src = ii.slice(5, ii.length-1);
+            for (let j = 0; j < jsStack.length; j++) {
+                if (jsStack[j] == src) {
+                    //console.log('忽略已扫src:', url);
+                    return;
+                }
+            }
+            jsStack.push(src);
+            jsCount++;
+            console.log('发现js:', src);
+        })
     });
 }
 
@@ -70,7 +83,7 @@ function detectAjax(str) {
 process.on('exit', function (code) {
     console.timeEnd('spider process');
     console.log('About to exit with code:', code);
-    console.log('共发现js地址:'+ urlStack.length +'个');
+    console.log('共发现js地址:'+ jsCount +'个');
 });
 
 function main(host) {
