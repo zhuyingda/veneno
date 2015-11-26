@@ -2,10 +2,11 @@
 var fs = require('fs');
 var through = require('through2');
 var request = require('request');
-var host = '';
+var hostPrefix = '';
 var urlStack = [];
 
-function httpGet(url) {
+function httpGet(url, ii) {
+    //console.log('发起请求:', url);
     request
         .get(url)
         .on('response', function (response) {
@@ -13,8 +14,9 @@ function httpGet(url) {
             //console.log(response.headers['content-type']);
         })
         .on('error', function (err) {
-            //console.log('出错url:', url);
-            //console.log(err)
+            console.log('出错url:', url);
+            console.log(err);
+            console.log('出错时扫到的:', ii);
         })
         .pipe(filter())
 }
@@ -29,26 +31,35 @@ function filter() {
 }
 
 function detectPath(str) {
-    let reg = /href\=[\'|\"].*[\'|\"]/g;
+    let reg = /<a\b("[^"]*"|'[^']*'|[^'">])*>/g;
     str.replace(reg, function (i) {
-        let url = i.slice(6, i.length - 1);
-        console.log('发现路径:', url);
-        for (let j = 0; j < urlStack.length; j++) {
-            if (urlStack[j] == url) {
+
+        let reg2 = /href=["'].*?["']/g;
+        i.replace(reg2, function (ii) {
+            let url = ii.slice(6, ii.length - 1);
+            //console.log('发现路径:', url);
+            if (/^http/.test(url)|| /^git/.test(url)) {
+                //console.log('忽略外站url:', url);
                 return;
             }
-        }
-        urlStack.push(url);
-        httpGet(host + url);
+            for (let j = 0; j < urlStack.length; j++) {
+                if (urlStack[j] == url) {
+                    //console.log('忽略已扫url:', url);
+                    return;
+                }
+            }
+            urlStack.push(url);
+            httpGet(hostPrefix + url, ii);
+        })
+
     });
 }
 
 function detectJs(str) {
     let reg = /src\=[\"|\'].*\.js[\"|\']/g;
     str.replace(reg, function (i) {
-        console.log('发现js:', i.slice(5, i.length - 1));
-        console.timeEnd('spider');
-        console.log('发现js链接' + urlStack.length + '个');
+        //console.log('发现js:', i.slice(5, i.length - 1));
+        //console.log('发现js链接' + urlStack.length + '个');
     });
 }
 
@@ -56,7 +67,17 @@ function detectAjax(str) {
 
 }
 
-module.exports = function (url) {
-    host = url;
+process.on('exit', function (code) {
+    console.timeEnd('spider process');
+    console.log('About to exit with code:', code);
+    console.log('共发现js地址:'+ urlStack.length +'个');
+});
+
+function main(host) {
+    console.time('spider process');
+    let url = 'http://' + host;
+    hostPrefix = url;
     httpGet(url);
 }
+
+module.exports = main
