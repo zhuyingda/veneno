@@ -1,5 +1,4 @@
 "use strict";
-var fs = require('fs');
 var through = require('through2');
 var request = require('request');
 
@@ -8,6 +7,7 @@ var urlStack = [];
 var jsCount = 0;
 var jsStack = [];
 var xhrCount = 0;
+var xhrStack = [];
 
 function httpGet(url, errStr) {
     //console.log('发起请求:', url);
@@ -21,12 +21,12 @@ function httpGet(url, errStr) {
         .pipe(filter())
 }
 
-function httpGetJs(src){
+function httpGetJs(src) {
     request.get(src).pipe(detectXhr());
 }
 
 function filter() {
-    return through.obj({ objectMode: true, allowHalfOpen: false },function (file, enc, cb) {
+    return through.obj({objectMode: true, allowHalfOpen: false}, function (file, enc, cb) {
         let htmlContent = file.toString();
         detectPath(htmlContent);
         detectJs(htmlContent);
@@ -82,12 +82,19 @@ function detectJs(str) {
     });
 }
 
-function detectXhr(){
-    return through.obj({ objectMode: true, allowHalfOpen: false },function (file, enc, cb) {
+function detectXhr() {
+    return through.obj({objectMode: true, allowHalfOpen: false}, function (file, enc, cb) {
         let jsContent = file.toString();
         let reg = /["']\/\w*['"]/g;
         jsContent.replace(reg, function (token) {
-            console.log('发现疑似ajax接口:', token)
+            console.log('发现疑似ajax接口:', token);
+            for (let j = 0; j < jsStack.length; j++) {
+                if (xhrStack[j] == token) {
+                    console.log('忽略已扫xhr:', token);
+                    return;
+                }
+            }
+            xhrStack.push(token);
             xhrCount++;
         });
         cb();
@@ -95,9 +102,12 @@ function detectXhr(){
 }
 
 process.on('exit', function (code) {
-    console.timeEnd('共消耗时间');
-    //console.log('About to exit with code:', code);
-    console.log('共发现xhr地址:' + xhrCount + '个');
+    if(code == 0){
+        console.timeEnd('共消耗时间');
+        console.log('共发现xhr地址:' + xhrCount + '个');
+    }else {
+        console.log()
+    }
 });
 
 function main(host) {
