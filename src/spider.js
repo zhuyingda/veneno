@@ -11,7 +11,7 @@ var xhrStack = [];
 
 function httpGet(url, errStr) {
     //console.log('发起请求:', url);
-    request
+    return request
         .get(url)
         .on('error', function (err) {
             //console.log('出错url:', url);
