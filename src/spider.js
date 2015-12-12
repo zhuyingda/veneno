@@ -81,12 +81,9 @@ function detectJs(str) {
 }
 
 function detectXhr(src) {
+
     return through.obj({objectMode: true, allowHalfOpen: false}, function (file, enc, cb) {
         var jsContent = file.toString();
-        //发现jquery类库js
-        if (/define\.amd\.jQuery/.test(jsContent)) {
-            return;
-        }
         let reg = /["']\/\w*['"]/g;
         jsContent.replace(reg, function (token) {
             let xhr = token.slice(1, token.length - 1);
@@ -100,6 +97,7 @@ function detectXhr(src) {
                     return;
                 }
             }
+            
             console.log('从', src, '发现疑似ajax接口:', xhr);
             xhrStack.push(xhr);
         });
