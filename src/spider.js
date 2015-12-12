@@ -4,9 +4,7 @@ var request = require('request');
 
 var hostPrefix = '';
 var urlStack = [];
-var jsCount = 0;
 var jsStack = [];
-var xhrCount = 0;
 var xhrStack = [];
 
 function httpGet(url, errStr) {
@@ -22,7 +20,7 @@ function httpGet(url, errStr) {
 }
 
 function httpGetJs(src) {
-    request.get(src).pipe(detectXhr());
+    request.get(src).pipe(detectXhr(src));
 }
 
 function filter() {
@@ -64,48 +62,57 @@ function detectJs(str) {
         i.replace(reg2, function (ii) {
             var src = ii.slice(5, ii.length - 1);
             for (let j = 0; j < jsStack.length; j++) {
-                if (/^http/.test(src)) {
-                    //console.log('发现外站js:', url);
-                    httpGetJs(src);
-                    return;
-                }
                 if (jsStack[j] == src) {
-                    //console.log('忽略已扫src:', url);
+                    //console.log('忽略已扫src:', src);
                     return;
                 }
             }
-            jsStack.push(src);
-            jsCount++;
-            console.log('发现js:', src);
-            httpGetJs(hostPrefix + src);
+            if (/^http/.test(src)) {
+                //console.log('发现外站js:', src);
+                httpGetJs(src);
+                jsStack.push(src);
+            } else {
+                //console.log('发现站内js:', src);
+                httpGetJs(hostPrefix + src);
+                jsStack.push(hostPrefix + src);
+            }
         })
     });
 }
 
-function detectXhr() {
+function detectXhr(src) {
     return through.obj({objectMode: true, allowHalfOpen: false}, function (file, enc, cb) {
-        let jsContent = file.toString();
+        var jsContent = file.toString();
+        //发现jquery类库js
+        if (/define\.amd\.jQuery/.test(jsContent)) {
+            return;
+        }
         let reg = /["']\/\w*['"]/g;
         jsContent.replace(reg, function (token) {
-            console.log('发现疑似ajax接口:', token);
-            for (let j = 0; j < jsStack.length; j++) {
-                if (xhrStack[j] == token) {
-                    console.log('忽略已扫xhr:', token);
+            let xhr = token.slice(1, token.length - 1);
+            if (xhr == '\/') {
+                //console.log('忽略无意义的"/":', token);
+                return;
+            }
+            for (let j = 0; j < xhrStack.length; j++) {
+                if (xhr == xhrStack[j]) {
+                    //console.log('忽略已扫xhr:', token);
                     return;
                 }
             }
-            xhrStack.push(token);
-            xhrCount++;
+            console.log('从', src, '发现疑似ajax接口:', xhr);
+            xhrStack.push(xhr);
         });
         cb();
     })
 }
 
 process.on('exit', function (code) {
-    if(code == 0){
+    if (code == 0) {
+        console.log(jsStack);
         console.timeEnd('共消耗时间');
-        console.log('共发现xhr地址:' + xhrCount + '个');
-    }else {
+        console.log('共发现xhr地址:' + xhrStack.length + '个');
+    } else {
         console.log()
     }
 });
