@@ -9,7 +9,7 @@ let jsStack = [];
 let xhrStack = [];
 
 function httpGet(url) {
-    request({url: url}, function (error, response, body) {
+    request({url: url}, (error, response, body) => {
         if (error == null) {
             let htmlContent = body;
             detectPath(htmlContent);
@@ -21,7 +21,7 @@ function httpGet(url) {
 }
 
 function httpGetJs(src) {
-    request({url: src}, function (error, response, body) {
+    request({url: src}, (error, response, body) => {
         if (error == null) {
             detectXhr(body);
         } else {
@@ -32,9 +32,9 @@ function httpGetJs(src) {
 
 function detectPath(str) {
     let reg = /<a\b("[^"]*"|'[^']*'|[^'">])*>/g;
-    str.replace(reg, function (i) {
+    str.replace(reg, (i) => {
         let reg2 = /href=["'].*?["']/g;
-        i.replace(reg2, function (ii) {
+        i.replace(reg2, (ii) => {
             let url = ii.slice(6, ii.length - 1);
             output.log('发现路径:' + url);
             if (/^git/.test(url) || /^javascript/.test(url)) {
@@ -53,16 +53,16 @@ function detectPath(str) {
                 }
             }
             urlStack.push(url);
-            httpGet(hostPrefix + url, ii);
+            httpGet(hostPrefix + url);
         })
     });
 }
 
 function detectJs(str) {
     let reg = /<script\b("[^"]*"|'[^']*'|[^'">])*>/g;
-    str.replace(reg, function (i) {
+    str.replace(reg, (i) => {
         let reg2 = /src=["'].*?["']/g;
-        i.replace(reg2, function (ii) {
+        i.replace(reg2, (ii) => {
             let src = ii.slice(5, ii.length - 1);
             for (let j = 0; j < jsStack.length; j++) {
                 if (jsStack[j] == src) {
@@ -90,7 +90,7 @@ function detectXhr(body) {
         return;
     }
     let reg = /["']\/\w*['"]/g;
-    jsContent.replace(reg, function (token) {
+    jsContent.replace(reg, (token) => {
         let xhr = token.slice(1, token.length - 1);
         if (xhr == '\/') {
             //todo: 忽略无意义的"/"
@@ -105,30 +105,28 @@ function detectXhr(body) {
         output.print('发现疑似ajax接口:' + xhr);
         xhrStack.push(xhr);
     });
-
 }
-
-process.on('exit', function (code) {
-    if (code == 0) {
-        console.timeEnd('共消耗时间');
-        output.print('共发现xhr地址:' + xhrStack.length + '个');
-    } else {
-        console.timeEnd('共消耗时间');
-        output.err('异常结束，code:' + code);
-    }
-});
 
 function main(param) {
     console.time('共消耗时间');
-    let url = 'http://' + param.host;
+    hostPrefix = 'http://' + param.host;
     crossSite = param.crossSite;
-    if(param.log){
+    if (param.log) {
         process.env.LOG = param.log;
-    }else{
+    } else {
         process.env.LOG = 'none'
     }
-    hostPrefix = url;
-    httpGet(url);
+    process.on('exit', (code) => {
+        if (code == 0) {
+            console.timeEnd('共消耗时间');
+            output.print('共发现xhr地址:' + xhrStack.length + '个');
+        } else {
+            console.timeEnd('共消耗时间');
+            output.err('异常结束，code:' + code);
+        }
+    });
+
+    httpGet(hostPrefix);
 }
 
 module.exports = main
