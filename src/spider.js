@@ -1,6 +1,8 @@
 "use strict";
-let request = require('request');
+const request = require('request');
+const output = require('../lib/out');
 
+let crossSite = false;
 let hostPrefix = '';
 let urlStack = [];
 let jsStack = [];
@@ -13,7 +15,7 @@ function httpGet(url) {
             detectPath(htmlContent);
             detectJs(htmlContent);
         } else {
-            console.log(error);
+            output.err(error);
         }
     })
 }
@@ -21,9 +23,9 @@ function httpGet(url) {
 function httpGetJs(src) {
     request({url: src}, function (error, response, body) {
         if (error == null) {
-            detectXhr(src, body);
+            detectXhr(body);
         } else {
-            console.log(error);
+            output.err(error);
         }
     })
 }
@@ -34,19 +36,19 @@ function detectPath(str) {
         let reg2 = /href=["'].*?["']/g;
         i.replace(reg2, function (ii) {
             let url = ii.slice(6, ii.length - 1);
-            //console.log('发现路径:', url);
+            output.log('发现路径:' + url);
             if (/^git/.test(url) || /^javascript/.test(url)) {
-                //console.log('忽略外站url:', url);
+                //todo: 忽略除http以外的其他协议
                 return;
             }
-            if(/^http/.test(url) ){
-                console.log('发现外站url:', url);
+            if (/^http/.test(url) && crossSite) {
+                output.log('发现外站路径:' + url);
                 httpGet(url);
                 return;
             }
             for (let j = 0; j < urlStack.length; j++) {
                 if (urlStack[j] == url) {
-                    //console.log('忽略已扫url:', url);
+                    //todo: 忽略已扫url
                     return;
                 }
             }
@@ -64,17 +66,16 @@ function detectJs(str) {
             let src = ii.slice(5, ii.length - 1);
             for (let j = 0; j < jsStack.length; j++) {
                 if (jsStack[j] == src) {
-                    //console.log('忽略已扫src:', src);
+                    //todo: 忽略已扫src
                     return;
                 }
             }
-
             if (/^http/.test(src)) {
-                //console.log('发现外站js:', src);
+                output.log('发现外站脚本:' + src);
                 httpGetJs(src);
                 jsStack.push(src);
             } else {
-                //console.log('发现站内js:', src);
+                output.log('发现站内脚本:' + src);
                 httpGetJs(hostPrefix + src);
                 jsStack.push(hostPrefix + src);
             }
@@ -82,26 +83,26 @@ function detectJs(str) {
     });
 }
 
-function detectXhr(src, body) {
+function detectXhr(body) {
     let jsContent = body;
-    //发现jquery类库js
     if (/define\.amd\.jQuery/.test(jsContent)) {
+        //todo: 发现jquery类库js
         return;
     }
     let reg = /["']\/\w*['"]/g;
     jsContent.replace(reg, function (token) {
         let xhr = token.slice(1, token.length - 1);
         if (xhr == '\/') {
-            //console.log('忽略无意义的"/":', token);
+            //todo: 忽略无意义的"/"
             return;
         }
         for (let j = 0; j < xhrStack.length; j++) {
             if (xhr == xhrStack[j]) {
-                //console.log('忽略已扫xhr:', token);
+                //todo: 忽略已扫xhr
                 return;
             }
         }
-        console.log('从', src, '发现疑似ajax接口:', xhr);
+        output.print('发现疑似ajax接口:' + xhr);
         xhrStack.push(xhr);
     });
 
@@ -110,15 +111,22 @@ function detectXhr(src, body) {
 process.on('exit', function (code) {
     if (code == 0) {
         console.timeEnd('共消耗时间');
-        console.log('共发现xhr地址:' + xhrStack.length + '个');
+        output.print('共发现xhr地址:' + xhrStack.length + '个');
     } else {
-        console.log()
+        console.timeEnd('共消耗时间');
+        output.err('异常结束，code:' + code);
     }
 });
 
-function main(host) {
+function main(param) {
     console.time('共消耗时间');
-    let url = 'http://' + host;
+    let url = 'http://' + param.host;
+    crossSite = param.crossSite;
+    if(param.log){
+        process.env.LOG = param.log;
+    }else{
+        process.env.LOG = 'none'
+    }
     hostPrefix = url;
     httpGet(url);
 }
