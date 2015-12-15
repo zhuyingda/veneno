@@ -24,6 +24,6 @@
     "minimist": "^1.2.0",
     "request": "^2.67.0",
     "stream": "0.0.2",
-    "through2": "^0.6.5"
+    "through2": "^2.0.0"
   }
 }

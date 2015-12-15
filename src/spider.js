@@ -1,34 +1,30 @@
 "use strict";
-var through = require('through2');
-var request = require('request');
+let request = require('request');
 
-var hostPrefix = '';
-var urlStack = [];
-var jsStack = [];
-var xhrStack = [];
+let hostPrefix = '';
+let urlStack = [];
+let jsStack = [];
+let xhrStack = [];
 
-function httpGet(url, errStr) {
-    //console.log('发起请求:', url);
-    return request
-        .get(url)
-        .on('error', function (err) {
-            //console.log('出错url:', url);
-            //console.log(err);
-            //console.log('出错时扫到的:', errStr);
-        })
-        .pipe(filter())
+function httpGet(url) {
+    request({url: url}, function (error, response, body) {
+        if (error == null) {
+            let htmlContent = body;
+            detectPath(htmlContent);
+            detectJs(htmlContent);
+        } else {
+            console.log(error);
+        }
+    })
 }
 
 function httpGetJs(src) {
-    request.get(src).pipe(detectXhr(src));
-}
-
-function filter() {
-    return through.obj({objectMode: true, allowHalfOpen: false}, function (file, enc, cb) {
-        let htmlContent = file.toString();
-        detectPath(htmlContent);
-        detectJs(htmlContent);
-        cb();
+    request({url: src}, function (error, response, body) {
+        if (error == null) {
+            detectXhr(src, body);
+        } else {
+            console.log(error);
+        }
     })
 }
 
@@ -39,8 +35,13 @@ function detectPath(str) {
         i.replace(reg2, function (ii) {
             let url = ii.slice(6, ii.length - 1);
             //console.log('发现路径:', url);
-            if (/^http/.test(url) || /^git/.test(url) || /^javascript/.test(url)) {
+            if (/^git/.test(url) || /^javascript/.test(url)) {
                 //console.log('忽略外站url:', url);
+                return;
+            }
+            if(/^http/.test(url) ){
+                console.log('发现外站url:', url);
+                httpGet(url);
                 return;
             }
             for (let j = 0; j < urlStack.length; j++) {
@@ -60,13 +61,14 @@ function detectJs(str) {
     str.replace(reg, function (i) {
         let reg2 = /src=["'].*?["']/g;
         i.replace(reg2, function (ii) {
-            var src = ii.slice(5, ii.length - 1);
+            let src = ii.slice(5, ii.length - 1);
             for (let j = 0; j < jsStack.length; j++) {
                 if (jsStack[j] == src) {
                     //console.log('忽略已扫src:', src);
                     return;
                 }
             }
+
             if (/^http/.test(src)) {
                 //console.log('发现外站js:', src);
                 httpGetJs(src);
@@ -80,34 +82,33 @@ function detectJs(str) {
     });
 }
 
-function detectXhr(src) {
-
-    return through.obj({objectMode: true, allowHalfOpen: false}, function (file, enc, cb) {
-        var jsContent = file.toString();
-        let reg = /["']\/\w*['"]/g;
-        jsContent.replace(reg, function (token) {
-            let xhr = token.slice(1, token.length - 1);
-            if (xhr == '\/') {
-                //console.log('忽略无意义的"/":', token);
+function detectXhr(src, body) {
+    let jsContent = body;
+    //发现jquery类库js
+    if (/define\.amd\.jQuery/.test(jsContent)) {
+        return;
+    }
+    let reg = /["']\/\w*['"]/g;
+    jsContent.replace(reg, function (token) {
+        let xhr = token.slice(1, token.length - 1);
+        if (xhr == '\/') {
+            //console.log('忽略无意义的"/":', token);
+            return;
+        }
+        for (let j = 0; j < xhrStack.length; j++) {
+            if (xhr == xhrStack[j]) {
+                //console.log('忽略已扫xhr:', token);
                 return;
             }
-            for (let j = 0; j < xhrStack.length; j++) {
-                if (xhr == xhrStack[j]) {
-                    //console.log('忽略已扫xhr:', token);
-                    return;
-                }
-            }
-            
-            console.log('从', src, '发现疑似ajax接口:', xhr);
-            xhrStack.push(xhr);
-        });
-        cb();
-    })
+        }
+        console.log('从', src, '发现疑似ajax接口:', xhr);
+        xhrStack.push(xhr);
+    });
+
 }
 
 process.on('exit', function (code) {
     if (code == 0) {
-        console.log(jsStack);
         console.timeEnd('共消耗时间');
         console.log('共发现xhr地址:' + xhrStack.length + '个');
     } else {
