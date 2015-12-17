@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/zhuyingda/veneno#readme",
   "dependencies": {
+    "chalk": "^1.1.1",
     "minimist": "^1.2.0",
     "request": "^2.67.0",
     "stream": "0.0.2",
