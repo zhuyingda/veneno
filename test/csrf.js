@@ -45,8 +45,4 @@ function run() {
     }
 }
 
-<<<<<<< HEAD
-run();
-=======
-run();
->>>>>>> 79e45eab160ff84fdd1e7c4ce345f2a57cb61917
+run()
