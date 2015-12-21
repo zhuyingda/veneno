@@ -9,7 +9,7 @@ let db = new loki('names.json');
 let names = db.addCollection('untapped_names');
 
 function save(val) {
-    names.insert( { name : val} );
+    names.insert({name: val});
     db.saveDatabase();
 }
 
@@ -17,12 +17,12 @@ function testName(name) {
     let options = {
         hostname: 'www.npmjs.com',
         port: 443,
-        path: '/search?q=jalor',
+        path: '/search?q=' + name,
         method: 'GET'
     };
 
-    let req = https.request(options, function(res) {
-        res.on('data', function(d) {
+    let req = https.request(options, function (res) {
+        res.on('data', function (d) {
             if (/Sorry,\s*no\s*results\s*for/.test(d)) {
                 console.log(name, '可用');
                 save(name);
@@ -31,13 +31,13 @@ function testName(name) {
     });
     req.end();
 
-    req.on('error', function(e) {
+    req.on('error', function (e) {
         console.error(e);
     });
 }
 
 function run() {
-    if(name != 'zzz'){
+    if (name != 'zzz') {
         console.log(name);
         testName(name);
         name = word.nextWord(name);
