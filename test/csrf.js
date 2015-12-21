@@ -14,13 +14,6 @@ function save(val) {
 }
 
 function testName(name) {
-    //console.log('发起请求：',name);
-    //csrf.httpGet('http://www.npmjs.com/search?q=' + name).then(function (data) {
-    //    if (/Sorry,\s*no\s*results\s*for/.test(data)) {
-    //        console.log(name, '可用');
-    //        save(name);
-    //    }
-    //});
     let options = {
         hostname: 'www.npmjs.com',
         port: 443,
@@ -29,9 +22,6 @@ function testName(name) {
     };
 
     let req = https.request(options, function(res) {
-        console.log("statusCode: ", res.statusCode);
-        console.log("headers: ", res.headers);
-
         res.on('data', function(d) {
             if (/Sorry,\s*no\s*results\s*for/.test(d)) {
                 console.log(name, '可用');
@@ -47,7 +37,7 @@ function testName(name) {
 }
 
 function run() {
-    if(name != 'z'){
+    if(name != 'zzz'){
         console.log(name);
         testName(name);
         name = word.nextWord(name);
