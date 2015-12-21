@@ -38,7 +38,7 @@ function testName(name) {
 
 function run() {
     if (name != 'zzz') {
-        console.log(name);
+        //console.log(name);
         testName(name);
         name = word.nextWord(name);
         process.nextTick(run);
@@ -47,12 +47,12 @@ function run() {
 
 //run();
 
-setTimeout(function () {
-    if (name != 'zzz') {
+setInterval(function () {
+    if (name != 'zzzzzz') {
         console.log(name);
         testName(name);
         name = word.nextWord(name);
-    }else{
+    } else {
         process.abort();
     }
-},20);
+}, 20);
