@@ -2,6 +2,7 @@
 
 const request = require('request');
 const output = require('../lib/out');
+const https = require('https');
 
 function httpGet(url) {
     return new Promise((resolve, reject) => {
