@@ -52,7 +52,5 @@ setInterval(function () {
         console.log(name);
         testName(name);
         name = word.nextWord(name);
-    } else {
-        process.abort();
     }
 }, 20);
