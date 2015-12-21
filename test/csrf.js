@@ -45,5 +45,4 @@ function run() {
     }
 }
 
-//run()
-testName('jallll');
+run()
