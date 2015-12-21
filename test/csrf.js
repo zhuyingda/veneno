@@ -45,4 +45,14 @@ function run() {
     }
 }
 
-run()
+//run();
+
+setTimeout(function () {
+    if (name != 'zzz') {
+        console.log(name);
+        testName(name);
+        name = word.nextWord(name);
+    }else{
+        process.abort();
+    }
+},20);
