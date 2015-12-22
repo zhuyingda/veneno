@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>New ThinkJS Application</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-size: 16px;
+            line-height: 20px;
+            font-family: arial;
+        }
+
+        a, a:visited {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        header {
+            padding: 70px 0 70px 0;
+            background-color: #4A6495
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #fff;
+            font-weight: normal;
+        }
+
+        code {
+            padding: 2px 4px;
+            font-size: 90%;
+            color: #c7254e;
+            background-color: #f9f2f4;
+            border-radius: 4px;
+        }
+
+        .content {
+            width: 1000px;
+            margin: auto
+        }
+
+        .wrap {
+            width: 1000px;
+            margin: auto
+        }
+
+        .content {
+            margin-top: 80px;
+        }
+
+        .list {
+            width: 800px;
+        }
+
+        .list .item {
+            position: relative;
+            padding-left: 70px;
+            margin-top: 50px;
+        }
+
+        .list .item .step {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            top: -3px;
+            left: 0;
+            border: 5px solid #4A6495;
+            border-radius: 23px;
+            text-align: center;
+            line-height: 36px;
+        }
+
+        .list .item h2 {
+            font-size: 24px;
+            font-weight: normal;
+        }
+
+        .list .item p {
+            line-height: 30px;
+            margin-top: 10px
+        }
+
+        button {
+            width: 49px;
+            height: 24px;
+            background: #ccc;
+            margin-left: 13px;
+        }
+        i {
+            font-size: 12px;
+            color: #aaaaaa;
+            padding-left: 30px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="wrap">
+        <h1>这是一个测试XSS的训练靶</h1>
+    </div>
+</header>
+<div class="content">
+    <div class="list">
+        <div class="item">
+            <div class="step">1</div>
+            <h2>请在这里输入一些文本</h2>
+
+            <p><input type="text">
+                <button>发送</button>
+            </p>
+        </div>
+        <div class="comments">
+            <% comments.forEach(function(i,key){ %>
+            <div class="item">
+                <div class="step"><%=key+2%></div>
+                <h2>评论</h2>
+                <p><%-i.comment%><i><%=i.time%></i></p>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+</div>
+<script src="http://s0.qhimg.com/!68df3f33/jquery.js"></script>
+<script>
+    (function () {
+        $('button').click(submit);
+        $('input').keyup(function (evt) {
+            if(evt.keyCode == 13){
+                submit();
+            }
+        });
+        function submit(){
+            var i = $('input').val();
+            i = encodeURI(i);
+            $.ajax({
+                url: '/add_comment?content=' + i,
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    var temp = '';
+                    $.map(data.comments, function (i, key) {
+                        temp += '<div class="item"><div class="step">' + (key+2) + '</div><h2>评论</h2><p>' + i.comment + '<i>' + i.time + '</i></p></div>';
+                    });
+                    $('.comments').html(temp);
+                    $('input').val('');
+                }
+            })
+        }
+    })()
+</script>
+</body>
+</html>
