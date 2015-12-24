@@ -22,13 +22,20 @@ function testName(name) {
         method: 'GET'
     };
 
+    let reg = new RegExp('"\/package\/' + name + '"');
     let req = https.request(options, function (res) {
+        let data = '';
         res.on('data', function (d) {
-            if (/Sorry,\s*no\s*results\s*for/.test(d)) {
+            data += d;
+
+        });
+        res.on('end', function () {
+            //console.log(reg.test(data.toString()));
+            if (!reg.test(data.toString())) {
                 console.log(name, '可用');
                 save(name);
             }
-        });
+        })
     });
     req.end();
 
@@ -37,37 +44,14 @@ function testName(name) {
     });
 }
 
-function testNameByApi(name) {
-    let options = {
-        hostname: 'ac.cnstrc.com',
-        port: 443,
-        path: '/autocomplete/' + name,
-        method: 'GET'
-    };
+let words = fs.readFileSync('../lib/google-10000-english-usa.txt', 'utf8').split('\n');
+let i = 0;
 
-    let req = https.request(options, function (res) {
-        res.on('data', function (d) {
-           console.log(d);
-        });
-    });
-    req.end();
-
-    req.on('error', function (e) {
-        console.error(e);
-    });
-}
-
-testName('jalor');
-
-//let words = fs.readFileSync('../lib/google-10000-english-usa.txt', 'utf8').split('\n');
-//for(let i of words){
-//    testName(i);
-//}
-
-//setInterval(function () {
-//    if (name != 'zzzzzz') {
-//        console.log(name);
-//        testName(name);
-//        name = word.nextWord(name);
-//    }
-//}, 20);
+let t = setInterval(function () {
+    if (i < words.length) {
+        testName(words[i]);
+        i++;
+    } else {
+        clearInterval(t);
+    }
+}, 30);
