@@ -3,6 +3,7 @@ const csrf = require('../src/csrf');
 const word = require('../lib/word_corpus');
 const loki = require('lokijs');
 const https = require('https');
+const fs = require('fs');
 
 let name = 'a';
 let db = new loki('names.json');
@@ -36,21 +37,37 @@ function testName(name) {
     });
 }
 
-function run() {
-    if (name != 'zzz') {
-        //console.log(name);
-        testName(name);
-        name = word.nextWord(name);
-        process.nextTick(run);
-    }
+function testNameByApi(name) {
+    let options = {
+        hostname: 'ac.cnstrc.com',
+        port: 443,
+        path: '/autocomplete/' + name,
+        method: 'GET'
+    };
+
+    let req = https.request(options, function (res) {
+        res.on('data', function (d) {
+           console.log(d);
+        });
+    });
+    req.end();
+
+    req.on('error', function (e) {
+        console.error(e);
+    });
 }
 
-//run();
+testName('jalor');
 
-setInterval(function () {
-    if (name != 'zzzzzz') {
-        console.log(name);
-        testName(name);
-        name = word.nextWord(name);
-    }
-}, 20);
+//let words = fs.readFileSync('../lib/google-10000-english-usa.txt', 'utf8').split('\n');
+//for(let i of words){
+//    testName(i);
+//}
+
+//setInterval(function () {
+//    if (name != 'zzzzzz') {
+//        console.log(name);
+//        testName(name);
+//        name = word.nextWord(name);
+//    }
+//}, 20);
