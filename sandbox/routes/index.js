@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var detector = require('detector');
 
 var store = {
     comments: [
@@ -12,6 +13,7 @@ var store = {
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
+    console.log(detector.parse(req.rawHeaders[11]));
     res.render('index', {comments: store.comments});
 }).get('/add_comment', function (req, res, next) {
     var d = new Date();
