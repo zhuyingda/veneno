@@ -138,10 +138,9 @@
                 url: '/add_comment?content=' + i,
                 dataType: 'json',
                 success: function (data) {
-                    console.log(data);
                     var temp = '';
                     $.map(data.comments, function (i, key) {
-                        temp += '<div class="item"><div class="step">' + (key+2) + '</div><h2>评论</h2><p>' + i.comment + '<i>' + i.time + '</i></p></div>';
+                        temp += '<div class="item"><div class="step">' + (key+2) + '</div><h2>评论</h2><p>' + decodeURI(i.comment) + '<i>' + i.time + '</i></p></div>';
                     });
                     $('.comments').html(temp);
                     $('input').val('');

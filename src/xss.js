@@ -30,7 +30,7 @@ function httpGet(url, params) {
     })
 }
 
-function watch(originUrl, para) {
+function penetrationWatch(originUrl, para) {
     for (let i of WatchList) {
         request(i.url, function (error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -60,7 +60,7 @@ function testApi() {
             o[j] = testTokenStr;
             httpGet(i.url, o).then((res)=> {
                 output.log('向接口' + i.url + '发起http请求成功');
-                watch(i.url, j);
+                penetrationWatch(i.url, j);
             })
         }
     }
