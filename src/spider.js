@@ -3,13 +3,14 @@ const request = require('request');
 const output = require('../lib/out');
 
 let crossSite = false;
+let headers = {};
 let hostPrefix = '';
 let urlStack = [];
 let jsStack = [];
 let xhrStack = [];
 
 function httpGet(url) {
-    request({url: url}, (error, response, body) => {
+    request({url: url, headers: headers}, (error, response, body) => {
         if (error == null) {
             let htmlContent = body;
             detectPath(htmlContent);
@@ -21,7 +22,7 @@ function httpGet(url) {
 }
 
 function httpGetJs(src) {
-    request({url: src}, (error, response, body) => {
+    request({url: src, headers: headers}, (error, response, body) => {
         if (error == null) {
             detectXhr(body);
         } else {
@@ -41,7 +42,7 @@ function detectPath(str) {
                 //todo: 忽略除http以外的其他协议
                 return;
             }
-            if (/^http/.test(url) && crossSite) {
+            if (/^http(s)?/.test(url) && crossSite) {
                 output.log('发现外站路径:' + url);
                 httpGet(url);
                 return;
@@ -53,7 +54,9 @@ function detectPath(str) {
                 }
             }
             urlStack.push(url);
-            httpGet(hostPrefix + url);
+            if(!/^http(s)?/.test(url)){
+                httpGet(hostPrefix + url);
+            }
         })
     });
 }
@@ -70,7 +73,7 @@ function detectJs(str) {
                     return;
                 }
             }
-            if (/^http/.test(src)) {
+            if (/^http(s)?/.test(src)) {
                 output.log('发现外站脚本:' + src);
                 httpGetJs(src);
                 jsStack.push(src);
@@ -111,6 +114,7 @@ function main(param) {
     console.time('共消耗时间');
     hostPrefix = 'http://' + param.host;
     crossSite = param.crossSite;
+    headers = param.headers;
     if (param.log) {
         process.env.LOG = param.log;
     } else {
@@ -125,7 +129,6 @@ function main(param) {
             output.err('异常结束，code:' + code);
         }
     });
-
     httpGet(hostPrefix);
 }
 

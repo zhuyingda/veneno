@@ -13,7 +13,8 @@ var store = {
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    console.log(detector.parse(req.rawHeaders[11]));
+    //console.log(detector.parse(req.rawHeaders[11]));
+    console.log(req.rawHeaders);
     res.render('index', {comments: store.comments});
 }).get('/add_comment', function (req, res, next) {
     var d = new Date();

@@ -15,7 +15,7 @@ var os = require('os');
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-var address = os.networkInterfaces().en0[1].address || '127.0.0.1';
+var address = os.networkInterfaces().en0? os.networkInterfaces().en0[1].address : '127.0.0.1';
 
 /**
  * Create HTTP server.
