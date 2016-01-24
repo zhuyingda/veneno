@@ -1,7 +1,10 @@
 "use strict";
 var xss = require('../src/xss');
+var fs = require('fs');
+var path = require('path');
 
-var host = '192.168.0.100:3000';
+var testIp = fs.readFileSync(path.resolve(__dirname, "../") + "/.venenoconf").toString();
+var host = testIp + ':3000';
 
 var apiList = [
     {

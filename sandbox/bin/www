@@ -8,6 +8,8 @@ var app = require('../app');
 var debug = require('debug')('xss_test:server');
 var http = require('http');
 var os = require('os');
+var fs = require('fs');
+var path = require('path');
 
 /**
  * Get port from environment and store in Express.
@@ -15,7 +17,8 @@ var os = require('os');
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-var address = os.networkInterfaces().en0? os.networkInterfaces().en0[1].address : '127.0.0.1';
+var address = os.networkInterfaces().en0 ? os.networkInterfaces().en0[1].address : '127.0.0.1';
+fs.writeFile(path.resolve(__dirname, "../../") + "/.venenoconf", address);
 
 /**
  * Create HTTP server.
