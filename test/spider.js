@@ -6,7 +6,7 @@ const spider = require('../src/spider');
  * @param log: 日志统计方式，none为不记录，log为打印出来
  */
 spider({
-    host: 'localhost:3000',
+    host: 'www.zhuyingda.com',
     crossSite: false,
     log: 'none',
     headers: {

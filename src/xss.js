@@ -8,8 +8,7 @@ const output = require('../lib/out');
 let leaks = [];
 let WatchList = [];
 let ApiList = [];
-let testTokenReg = /tokenMadeByVenenoWebPenetration/;
-let testTokenStr = 'tokenMadeByVenenoWebPenetration';
+let tokenPrefix = 'tokenMadeByVenenoWebPenetration';
 let Dict = [];
 
 function httpGet(url, params) {
@@ -30,11 +29,11 @@ function httpGet(url, params) {
     })
 }
 
-function penetrationWatch(originUrl, para) {
+function penetrationWatch(originUrl, para, token) {
     for (let i of WatchList) {
         request(i.url, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                if (testTokenReg.test(body)) {
+                if (body.includes(token)) {
                     output.print('发现疑似xss点:' + originUrl + '参数:' + para + '<=>' + i.url);
                     crush(originUrl, para, i.url);
                 }
@@ -57,10 +56,10 @@ function testApi() {
     for (let i of ApiList) {
         for (let j of i.params) {
             let o = {};
-            o[j] = testTokenStr;
+            o[j] = tokenPrefix + new Date().getTime();
             httpGet(i.url, o).then((res)=> {
                 output.log('向接口' + i.url + '发起http请求成功');
-                penetrationWatch(i.url, j);
+                penetrationWatch(i.url, j, o[j]);
             })
         }
     }

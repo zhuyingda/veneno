@@ -14,4 +14,9 @@ page.onResourceRequested = function(request) {
 page.onResourceReceived = function(response) {
     //console.log('Receive ' + JSON.stringify(response, undefined, 4));
 };
+
+page.onResourceError = function(resourceError) {
+    console.log('ERROR: Unable to load resource (#' + resourceError.id + 'URL:' + resourceError.url + ')');
+    console.log('ERROR: code ' + resourceError.errorCode + '. Description: ' + resourceError.errorString);
+};
 page.open('http://xiao.youxi.com/');
