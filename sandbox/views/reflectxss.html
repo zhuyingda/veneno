@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>反射型xss</title>
+    <style>
+        body {
+            background: #111111;
+            color: #cccccc;
+        }
+    </style>
+</head>
+<body>
+<div><%-querystr%></div>
+<div>pathname echo: <p id="p"></p></div>
+<script>
+    (function () {
+        console.log(location.pathname);
+        var p = document.getElementById("p");
+        p.innerHTML = decodeURI(location.pathname);
+    })()
+</script>
+</body>
+</html>

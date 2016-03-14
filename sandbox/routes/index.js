@@ -25,6 +25,14 @@ router.get('/', function (req, res, next) {
     res.end(JSON.stringify({errno: 0, errmsg: 'ok', comments: store.comments}));
 }).get('/get_comment', function (req, res, next) {
     res.end(JSON.stringify({errno: 0, errmsg: 'ok', comments: store.comments}));
+}).get('/clickjack', function (req, res, next) {
+    res.render('clickjack');
+}).get('/xss', function (req, res, next) {
+    res.set({"X-FRAME-OPTIONS":"DENY"});
+    res.render('reflectxss', {querystr:req.query.param1});
+}).get('/jacked', function (req, res, next) {
+    res.set({"X-FRAME-OPTIONS":"DENY"});
+    res.render('jacked');
 })
 
 module.exports = router;

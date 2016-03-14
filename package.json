@@ -4,7 +4,7 @@
   "description": "a web sec lib",
   "main": "index.js",
   "scripts": {
-    "test": "node ./sandbox/bin/www"
+    "test": "nodemon ./sandbox/bin/www"
   },
   "repository": {
     "type": "git",

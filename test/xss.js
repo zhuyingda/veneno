@@ -1,7 +1,5 @@
 "use strict";
-var xss = require('../src/xss');
-var fs = require('fs');
-var path = require('path');
+var xss = require('../src/xss').durable;
 
 var testIp = fs.readFileSync(path.resolve(__dirname, "../") + "/.venenoconf").toString();
 var host = testIp + ':3000';

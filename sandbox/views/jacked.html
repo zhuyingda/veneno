@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>被劫持的页面</title>
+    <style>
+        body {
+            display: none;
+        }
+    </style>
+    <script>
+        (function () {
+            if (self == top) {
+                var theBody = document.getElementsByTagName('body')[0];
+                theBody.style.display = "block";
+            } else {
+                top.location = self.location;
+            }
+        })()
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -3,6 +3,7 @@
 const through = require('through2');
 const request = require('request');
 const fs = require('fs');
+const path = require('path');
 const output = require('../lib/out');
 
 let leaks = [];
@@ -89,4 +90,24 @@ function main(opt) {
     testApi();
 }
 
-module.exports = main
+function reflect(url, param) {
+    let dict = fs.readFileSync(path.resolve(__dirname, 'dictionary')).toString();
+    dict = dict.split('\n');
+
+    for (let i of dict) {
+        let obj = {};
+        obj[param] = i;
+        httpGet(url, obj)
+            .then(function (data) {
+                //console.log(data);
+                if (data.includes(i)) {
+                    output.err("反射型xss："+ i);
+                }
+            })
+    }
+}
+
+module.exports = {
+    durable: main,
+    reflect: reflect
+}
