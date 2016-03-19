@@ -23,7 +23,7 @@ function httpGet(url, params) {
             })
             .pipe(through.obj({objectMode: true, allowHalfOpen: false}, (file, enc, cb)=> {
                 let response = file.toString();
-                output.log(response);
+                output.log("测试路径: " + url + "参数: " + params + "\n");
                 resolve(response);
                 cb();
             }))
@@ -47,7 +47,7 @@ function xssCheck(originUrl, para, vector, watchUrl) {
     request(watchUrl, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             if (body.indexOf(vector) != -1) {
-                output.err('发现xss点:' + originUrl + '参数:' + para + '<=>' + watchUrl + '向量:' + vector);
+                output.err('持久型xss:' + originUrl + '参数:' + para + '<=>' + watchUrl + '向量:' + vector);
             }
         }
     })
@@ -90,20 +90,28 @@ function main(opt) {
     testApi();
 }
 
-function reflect(url, param) {
+function reflect(opt) {
     let dict = fs.readFileSync(path.resolve(__dirname, 'dictionary')).toString();
     dict = dict.split('\n');
 
-    for (let i of dict) {
-        let obj = {};
-        obj[param] = i;
-        httpGet(url, obj)
-            .then(function (data) {
-                //console.log(data);
-                if (data.includes(i)) {
-                    output.err("反射型xss："+ i);
-                }
-            })
+    if (opt.log) {
+        process.env.LOG = opt.log;
+    } else {
+        process.env.LOG = 'none'
+    }
+
+    for (let param of opt.params) {
+        for (let i of dict) {
+            let obj = {};
+            obj[param] = i;
+            httpGet(opt.url, obj)
+                .then(function (data) {
+                    //console.log(data);
+                    if (data.includes(i)) {
+                        output.err("反射型xss：" + i);
+                    }
+                })
+        }
     }
 }
 
