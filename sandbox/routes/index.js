@@ -17,6 +17,7 @@ router.get('/', function (req, res, next) {
     console.log(req.rawHeaders);
     res.render('index', {comments: store.comments});
 }).get('/add_comment', function (req, res, next) {
+    console.log(req.headers);
     var d = new Date();
     store.comments.push({
         comment: req.query.content,
@@ -31,7 +32,7 @@ router.get('/', function (req, res, next) {
     res.set({"X-FRAME-OPTIONS":"DENY"});
     res.render('reflectxss', {querystr:req.query.param1});
 }).get('/jacked', function (req, res, next) {
-    res.set({"X-FRAME-OPTIONS":"DENY"});
+    //res.set({"X-FRAME-OPTIONS":"DENY"});
     res.render('jacked');
 })
 

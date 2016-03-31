@@ -4,22 +4,44 @@
     <meta charset="UTF-8">
     <title>被劫持的页面</title>
     <style>
-        body {
-            display: none;
+        /*body {*/
+            /*display: none;*/
+        /*}*/
+        .btn {
+            background: #ccc;
+            color: #000;
+            padding: 50px;
+            margin: auto;
         }
     </style>
     <script>
-        (function () {
-            if (self == top) {
-                var theBody = document.getElementsByTagName('body')[0];
-                theBody.style.display = "block";
-            } else {
-                top.location = self.location;
-            }
-        })()
+//        (function () {
+//            if (self == top) {
+//                var theBody = document.getElementsByTagName('body')[0];
+//                theBody.style.display = "block";
+//            } else {
+//                top.location = self.location;
+//            }
+//        })()
     </script>
 </head>
 <body>
-
+<div class="btn">这是一个按钮</div>
+<script src="//cdn.bootcss.com/jquery/1.11.1/jquery.js"></script>
+<script>
+    ;(function () {
+        $(".btn").click(function () {
+            $.ajax({
+                dataType: "json",
+                data: {
+                    comment: "kill",
+                    time: "123"
+                },
+                type: "get",
+                url: '/add_comment'
+            })
+        })
+    })();
+</script>
 </body>
 </html>
