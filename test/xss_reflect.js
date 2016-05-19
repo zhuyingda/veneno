@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 
 var testIp = fs.readFileSync(path.resolve(__dirname, "../") + "/.venenoconf").toString();
-var host = 'www.chuangkit.com';
+var host = testIp + ':3000';
 
 /**
  * @param url: 要测试的host+path但不包括query
@@ -12,7 +12,7 @@ var host = 'www.chuangkit.com';
  * @param log: 日志统计方式，none为不记录，print为打印出来
  */
 xss({
-    url: 'http://' + host + '/mod/design/design.html',
-    params: ["d","h","k","sec","w","kt"],
+    url: 'http://' + host + '/xss',
+    params: ["param1"],
     log: "none"
 });

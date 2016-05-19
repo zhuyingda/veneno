@@ -129,7 +129,9 @@ function reflect(opt) {
 }
 
 function progressBar(percent){
-    process.stdout.write('\r----'+Math.floor(percent*100)+"%----");
+    if(process.env.LOG === "none"){
+        process.stdout.write('\r----'+Math.floor(percent*100)+"%----");
+    }
 }
 
 module.exports = {
