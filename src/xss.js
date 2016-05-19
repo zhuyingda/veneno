@@ -99,20 +99,37 @@ function reflect(opt) {
     } else {
         process.env.LOG = 'none'
     }
+    let count = 0;
+    let hasFound = false;
+    let length = dict.length * opt.params.length;
 
     for (let param of opt.params) {
         for (let i of dict) {
             let obj = {};
             obj[param] = i;
+
             httpGet(opt.url, obj)
                 .then(function (data) {
-                    //console.log(data);
+                    count++;
+                    progressBar(count/length);
+                    if (count/length === 1) {
+                        console.log("\n扫描完毕");
+                        if (!hasFound) {
+                            console.log("未发现任何漏洞");
+                        }
+                        process.exit();
+                    }
                     if (data.includes(i)) {
+                        hasFound = true;
                         output.err("反射型xss：" + i);
                     }
                 })
         }
     }
+}
+
+function progressBar(percent){
+    process.stdout.write('\r----'+Math.floor(percent*100)+"%----");
 }
 
 module.exports = {
