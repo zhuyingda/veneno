@@ -1,7 +1,3 @@
-/**
- * @file 反射型xss测试
- */
-
 "use strict";
 var xss = require('../src/xss').reflect;
 var fs = require('fs');
@@ -16,7 +12,7 @@ var host = testIp + ':3000';
  * @param log: 日志统计方式，none为不记录，print为打印出来
  */
 xss({
-    url: 'http://bbs.treebear.cn/search.php',
-    params: ["mod","searchid","orderby","lastpost","ascdesc","searchsubmit","kw"],
+    url: 'http://' + host + '/xss',
+    params: ["param1"],
     log: "none"
 });

@@ -39,7 +39,7 @@ node test/xss_durable.js
 测试反射型XSS扫描模块
 
 ```
-node test/xss_reflect.js
+node test/xss_self.js
 ```
 
 测试C++扩展
