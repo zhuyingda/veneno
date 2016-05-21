@@ -16,7 +16,14 @@ function httpGet(url, params) {
     return new Promise((resolve, reject)=> {
         output.log(url);
         request
-            .get(url, {qs: params})
+            .get(url, {
+                qs: params,
+                //如果想用charles/fiddler之类的监听数据包
+                // proxy: 'http://localhost:8089',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+                }
+            })
             .on('error', function (err) {
                 console.log(err);
                 reject(err)
@@ -111,8 +118,8 @@ function reflect(opt) {
             httpGet(opt.url, obj)
                 .then(function (data) {
                     count++;
-                    progressBar(count/length);
-                    if (count/length === 1) {
+                    progressBar(count / length);
+                    if (count / length === 1) {
                         console.log("\n扫描完毕");
                         if (!hasFound) {
                             console.log("未发现任何漏洞");
@@ -128,9 +135,9 @@ function reflect(opt) {
     }
 }
 
-function progressBar(percent){
-    if(process.env.LOG === "none"){
-        process.stdout.write('\r----'+Math.floor(percent*100)+"%----");
+function progressBar(percent) {
+    if (process.env.LOG === "none") {
+        process.stdout.write('\r----' + Math.floor(percent * 100) + "%----");
     }
 }
 
