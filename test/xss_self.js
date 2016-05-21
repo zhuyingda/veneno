@@ -1,5 +1,5 @@
 "use strict";
-var xss = require('../src/xss').reflect;
+var xss = require('../src/xss').selfXss;
 var fs = require('fs');
 var path = require('path');
 

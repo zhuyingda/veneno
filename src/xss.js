@@ -12,17 +12,18 @@ let ApiList = [];
 let tokenPrefix = 'tokenMadeByVenenoWebPenetration';
 let Dict = [];
 
-function httpGet(url, params) {
+function httpGet(url, params, jar) {
     return new Promise((resolve, reject)=> {
         output.log(url);
         request
             .get(url, {
                 qs: params,
                 //如果想用charles/fiddler之类的监听数据包
-                // proxy: 'http://localhost:8089',
+                proxy: 'http://localhost:8089',
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-                }
+                },
+                jar: jar
             })
             .on('error', function (err) {
                 console.log(err);
@@ -97,7 +98,7 @@ function main(opt) {
     testApi();
 }
 
-function reflect(opt) {
+function selfXss(opt) {
     let dict = fs.readFileSync(path.resolve(__dirname, 'dictionary')).toString();
     dict = dict.split('\n');
 
@@ -106,16 +107,24 @@ function reflect(opt) {
     } else {
         process.env.LOG = 'none'
     }
+
+    //命令行进度条
     let count = 0;
     let hasFound = false;
     let length = dict.length * opt.params.length;
+
+    //根据参数设置cookie
+    let j = request.jar();
+    let cookie = request.cookie(opt.cookie);
+    j.setCookie(cookie, opt.url);
+
 
     for (let param of opt.params) {
         for (let i of dict) {
             let obj = {};
             obj[param] = i;
 
-            httpGet(opt.url, obj)
+            httpGet(opt.url, obj, j)
                 .then(function (data) {
                     count++;
                     progressBar(count / length);
@@ -143,5 +152,5 @@ function progressBar(percent) {
 
 module.exports = {
     durable: main,
-    reflect: reflect
+    selfXss: selfXss
 }
