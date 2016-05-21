@@ -19,7 +19,7 @@ function httpGet(url, params, jar) {
             .get(url, {
                 qs: params,
                 //如果想用charles/fiddler之类的监听数据包
-                proxy: 'http://localhost:8089',
+                // proxy: 'http://localhost:8089',
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
                 },
