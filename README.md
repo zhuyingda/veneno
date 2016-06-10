@@ -30,7 +30,7 @@ npm test
 node test/spider.js
 ```
 
-测试持久型XSS扫描模块, 需说明的一点, 需要创建src/dictionary文件作为xss扫描的字典, 因为这个文件是git ignore的
+测试持久型XSS扫描模块
 
 ```
 node test/xss_durable.js

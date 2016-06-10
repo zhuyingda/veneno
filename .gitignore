@@ -28,4 +28,4 @@ node_modules
 .idea
 .DS_Store
 .venenoconf
-src/dictionary
+#src/dictionary
