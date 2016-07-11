@@ -27,25 +27,25 @@ npm test
 测试爬虫模块
 
 ```
-node test/spider.js
+npm run spider
 ```
 
 测试持久型XSS扫描模块
 
 ```
-node test/xss_durable.js
+npm run dom-xss
 ```
 
 测试反射型XSS扫描模块
 
 ```
-node test/xss_self.js
+npm run self-xss
 ```
 
 测试C++扩展
 
 ```
-node test/cc_addon.js
+npm run cpp-addon
 ```
 
 description(项目背景介绍)
