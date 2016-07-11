@@ -1,10 +1,14 @@
 {
   "name": "veneno",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "a web sec lib",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon ./sandbox/bin/www"
+    "test": "nodemon ./sandbox/bin/www",
+    "self-xss": "node test/xss_self.js",
+    "dom-xss": "node test/xss_dom.js",
+    "spider": "node test/spider.js",
+    "cpp-addon": "node test/cc_addon.js"
   },
   "repository": {
     "type": "git",
