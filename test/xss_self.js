@@ -14,6 +14,6 @@ var host = testIp + ':3000';
 xss({
     url: 'http://' + host + '/xss',
     params: ["param1"],
-    cookie: "key=10010",
+    cookie: "key=10010; key2=2012; key3=xxxxx",
     log: "none"
 });

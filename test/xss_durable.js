@@ -35,5 +35,6 @@ var watchList = [
 xss({
     apiList: apiList,
     watchList: watchList,
+    cookie: "key=10010; key2=2012; key3=xxxxx",
     log: 'none'
 });

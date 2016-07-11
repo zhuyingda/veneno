@@ -10,9 +10,17 @@ let leaks = [];
 let WatchList = [];
 let ApiList = [];
 let tokenPrefix = 'tokenMadeByVenenoWebPenetration';
+let COOKIE = null;
 let Dict = [];
 
-function httpGet(url, params, jar) {
+function httpGet(url, params, cookie) {
+
+    //根据参数设置cookie
+    let jar = {};
+    if(cookie){
+        jar = dealCookie(cookie, url);
+    }
+
     return new Promise((resolve, reject)=> {
         output.log(url);
         request
@@ -39,6 +47,20 @@ function httpGet(url, params, jar) {
 }
 
 function penetrationWatch(originUrl, para, token) {
+    if(COOKIE){
+        for (let i of WatchList) {
+            let j = dealCookie(COOKIE, i.url);
+            request({url: i.url, jar: j}, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    if (body.includes(token)) {
+                        output.print('发现疑似xss点:' + originUrl + '参数:' + para + '<=>' + i.url);
+                        crush(originUrl, para, i.url);
+                    }
+                }
+            })
+        }
+        return;
+    }
     for (let i of WatchList) {
         request(i.url, function (error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -52,6 +74,17 @@ function penetrationWatch(originUrl, para, token) {
 }
 
 function xssCheck(originUrl, para, vector, watchUrl) {
+    if(COOKIE){
+        let j = dealCookie(COOKIE, watchUrl);
+        request({url: watchUrl, jar: j}, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                if (body.indexOf(vector) != -1) {
+                    output.err('持久型xss:' + originUrl + '参数:' + para + '<=>' + watchUrl + '向量:' + vector);
+                }
+            }
+        });
+        return;
+    }
     request(watchUrl, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             if (body.indexOf(vector) != -1) {
@@ -66,7 +99,7 @@ function testApi() {
         for (let j of i.params) {
             let o = {};
             o[j] = tokenPrefix + new Date().getTime();
-            httpGet(i.url, o).then((res)=> {
+            httpGet(i.url, o, COOKIE).then((res)=> {
                 output.log('向接口' + i.url + '发起http请求成功');
                 penetrationWatch(i.url, j, o[j]);
             })
@@ -78,7 +111,7 @@ function crush(url, para, watchUrl) {
     for (let vector of Dict) {
         let o = {};
         o[para] = vector;
-        httpGet(url, o).then((res)=> {
+        httpGet(url, o, COOKIE).then((res)=> {
             output.log('向接口' + url + '发起http请求成功');
             xssCheck(url, para, vector, watchUrl);
         })
@@ -95,7 +128,18 @@ function main(opt) {
     ApiList = opt.apiList;
     let dict = fs.readFileSync(__dirname + '/dictionary').toString();
     Dict = dict.split('\n');
+    COOKIE = opt.cookie? opt.cookie: null;
     testApi();
+}
+
+function dealCookie(cookieStr, uri) {
+    let jar = request.jar();
+    let cookies = cookieStr.split(";");
+    for(let i in cookies) {
+        let cookie = request.cookie(cookies[i]);
+        jar.setCookie(cookie, uri);
+    }
+    return jar;
 }
 
 function selfXss(opt) {
@@ -113,18 +157,12 @@ function selfXss(opt) {
     let hasFound = false;
     let length = dict.length * opt.params.length;
 
-    //根据参数设置cookie
-    let j = request.jar();
-    let cookie = request.cookie(opt.cookie);
-    j.setCookie(cookie, opt.url);
-
-
     for (let param of opt.params) {
         for (let i of dict) {
             let obj = {};
             obj[param] = i;
 
-            httpGet(opt.url, obj, j)
+            httpGet(opt.url, obj, opt.cookie)
                 .then(function (data) {
                     count++;
                     progressBar(count / length);
