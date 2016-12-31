@@ -167,15 +167,15 @@ function selfXss(opt) {
                     count++;
                     progressBar(count / length);
                     if (count / length === 1) {
-                        console.log("\n扫描完毕");
+                        output.log('\n'+opt.url+"接口 扫描完毕");
                         if (!hasFound) {
-                            console.log("未发现任何漏洞");
+                            output.log(opt.url+"接口 未发现任何漏洞");
                         }
                         process.exit();
                     }
                     if (data.includes(i)) {
                         hasFound = true;
-                        output.err("反射型xss：" + i);
+                        output.err(opt.url+"接口 发现反射型xss：" + i);
                     }
                 })
         }
@@ -183,7 +183,7 @@ function selfXss(opt) {
 }
 
 function progressBar(percent) {
-    if (process.env.LOG === "none") {
+    if (process.env.LOG === "print") {
         process.stdout.write('\r----' + Math.floor(percent * 100) + "%----");
     }
 }

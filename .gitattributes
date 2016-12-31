@@ -1,0 +1,3 @@
+*.html linguist-language=JavaScript
+*.gyp linguist-language=JavaScript
+*.mk linguist-language=JavaScript

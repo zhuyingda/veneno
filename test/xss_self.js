@@ -15,5 +15,5 @@ xss({
     url: 'http://' + host + '/xss',
     params: ["param1"],
     cookie: "key=10010; key2=2012; key3=xxxxx",
-    log: "none"
+    log: "print"
 });
