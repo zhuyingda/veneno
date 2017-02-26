@@ -13,8 +13,8 @@ request({
         a: 1
     },
     method: 'GETs'
-}).then(function (resp) {
-    console.log(resp.data);
+}).then(function (data) {
+    console.log(data.resp);
 },function (err) {
     console.error(err);
 });
