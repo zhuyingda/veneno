@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "nodemon ./sandbox/bin/www",
-    "self-xss": "node test/xss_self.js",
-    "dom-xss": "node test/xss_dom.js",
+    "reflected-xss": "node test/xss_self.js",
+    "stored-xss": "node test/xss_dom.js",
     "spider": "node test/spider.js",
     "cpp-addon": "node test/cc_addon.js"
   },

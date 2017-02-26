@@ -33,13 +33,13 @@ npm run spider
 测试持久型XSS扫描模块
 
 ```
-npm run dom-xss
+npm run stored-xss
 ```
 
 测试反射型XSS扫描模块
 
 ```
-npm run self-xss
+npm run reflected-xss
 ```
 
 测试C++扩展
