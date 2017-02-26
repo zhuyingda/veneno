@@ -34,6 +34,9 @@ router.get('/', function (req, res, next) {
 }).get('/jacked', function (req, res, next) {
     //res.set({"X-FRAME-OPTIONS":"DENY"});
     res.render('jacked');
-})
+}).get('/test_get_method', function (req, res) {
+    console.log(req);
+    res.json({a:1});
+});
 
 module.exports = router;

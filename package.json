@@ -7,8 +7,7 @@
     "test": "nodemon ./sandbox/bin/www",
     "reflected-xss": "node test/xss_self.js",
     "stored-xss": "node test/xss_dom.js",
-    "spider": "node test/spider.js",
-    "cpp-addon": "node test/cc_addon.js"
+    "spider": "node test/spider.js"
   },
   "repository": {
     "type": "git",
@@ -28,12 +27,11 @@
     "chalk": "^1.1.1",
     "lokijs": "^1.3.10",
     "minimist": "^1.2.0",
-    "node-horseman": "^2.8.2",
-    "phantomjs": "^1.9.19",
     "q": "^1.4.1",
     "request": "^2.67.0",
     "stream": "0.0.2",
-    "through2": "^2.0.0"
+    "through2": "^2.0.0",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "body-parser": "^1.13.3",

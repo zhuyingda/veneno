@@ -42,12 +42,6 @@ npm run stored-xss
 npm run reflected-xss
 ```
 
-测试C++扩展
-
-```
-npm run cpp-addon
-```
-
 description(项目背景介绍)
 ------------------
 [official website(官方文档)](http://www.zhuyingda.com/docs/veneno.html)
